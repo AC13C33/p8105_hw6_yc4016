@@ -31,11 +31,14 @@ homicide_df
 
 
 ```{r}
-fit_logistic = 
+fit_logistic_baltimore = 
   homicide_df %>% 
-  glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = .) 
+  filter(city_state == "Baltimore, MD") %>%
+  glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = ., family = binomial()) 
 
-fit_logistic
+fit_logistic_baltimore
 ```
+
+
 
 
