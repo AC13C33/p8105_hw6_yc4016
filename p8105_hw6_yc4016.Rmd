@@ -59,21 +59,32 @@ fit_logistic_all =
   mutate(models = map(data, ~glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = .x, family = binomial())),
          results = map(models, broom::tidy)) %>% 
   select(-data, -models) %>% 
-  unnest(results)
-
-fit_logistic_all
-```
-
-
-```{r}
-fit_logistic_all %>% 
+  unnest(results) %>% 
   mutate(OR = exp(estimate),
          lower_bound = exp(estimate - 1.96 * std.error),
          upper_bound = exp(estimate + 1.96 * std.error)) %>%
   filter(term == "victim_sexMale") %>% 
-  select(city_state, OR, lower_bound, upper_bound) %>%
-  knitr::kable(digits = 3)
+  select(city_state, OR, lower_bound, upper_bound)
+
+fit_logistic_all
+
+fit_logistic_all %>% 
+    knitr::kable(digits = 3)
 ```
 
 
+```{r}
+plot = 
+  fit_logistic_all %>% 
+    mutate(city_state = fct_reorder(city_state, OR)) %>% 
+    ggplot(aes(x = city_state, y = OR, color = city_state)) + 
+    geom_point() + 
+    geom_errorbar(aes(ymin = lower_bound, ymax = upper_bound)) + 
+    theme(axis.text.x = element_text(angle=90, hjust = 1)) + 
+    labs(x = "City_states",
+         y = "Estimated OR",
+         title = "Estimated ORs with CIs for all cities for homicides comparing male/female victims") +
+         theme(legend.position = "none") 
 
+plot
+```
