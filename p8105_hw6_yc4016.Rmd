@@ -30,5 +30,12 @@ homicide_df
 ```
 
 
+```{r}
+fit_logistic = 
+  homicide_df %>% 
+  glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = .) 
+
+fit_logistic
+```
 
 
