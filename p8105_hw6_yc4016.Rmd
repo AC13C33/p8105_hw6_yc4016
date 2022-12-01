@@ -20,14 +20,15 @@ set.seed(1)
 homicide_df = 
   read_csv("./data/homicide-data.csv") %>% 
   mutate(city_state = str_c(city, state, sep = ", ", collapse = NULL),
-         homicide_situation = case_when(disposition == "Closed without arrest" ~ "unsolved",
-                                        disposition == "Open/No arrest"        ~ "unsolved",
-                                        disposition == "Closed by arrest"      ~ "solved")) %>% 
+         homicide_situation = as.numeric(disposition == "Closed by arrest")) %>% 
   filter(!(city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL")),
          victim_race %in% c("White", "Black")) %>% 
-  mutate (victim_age = as.numeric(victim_age))
+  mutate (victim_age = as.numeric(victim_age),
+          homicide_situation = as.numeric(homicide_situation))
   
 homicide_df
 ```
-```
+
+
+
 
