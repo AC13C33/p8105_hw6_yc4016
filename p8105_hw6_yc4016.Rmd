@@ -65,4 +65,15 @@ fit_logistic_all
 ```
 
 
+```{r}
+fit_logistic_all %>% 
+  mutate(OR = exp(estimate),
+         lower_bound = exp(estimate - 1.96 * std.error),
+         upper_bound = exp(estimate + 1.96 * std.error)) %>%
+  filter(term == "victim_sexMale") %>% 
+  select(city_state, OR, lower_bound, upper_bound) %>%
+  knitr::kable(digits = 3)
+```
+
+
 
