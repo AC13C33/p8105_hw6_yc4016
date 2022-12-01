@@ -52,5 +52,17 @@ fit_logistic_baltimore %>%
 ```
 
 
+```{r}
+fit_logistic_all =
+  homicide_df %>% 
+  nest(data = -city_state) %>% 
+  mutate(models = map(data, ~glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = .x, family = binomial())),
+         results = map(models, broom::tidy)) %>% 
+  select(-data, -models) %>% 
+  unnest(results)
+
+fit_logistic_all
+```
+
 
 
