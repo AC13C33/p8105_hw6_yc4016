@@ -128,3 +128,16 @@ birthweight =
 birthweight
 ```
 * I have added the predictions and residuals. 
+
+```{r}
+plot =
+  birthweight %>% 
+  ggplot(aes(x = pred, y = resid)) + 
+  geom_point(alpha = 0.5, cex=0.5) +
+  labs(title = "Residuals against fitted values",
+       x = "Fitted values",
+       y = "Residuals") 
+
+plot
+```
+* I have create a plot that is residuals against fitted values
