@@ -106,4 +106,17 @@ birthweight =
 
 birthweight
 ```
+* No missing data
+
+```{r}
+model_fit = lm(bwt ~ babysex + bhead + bwt + delwt + gaweeks + malform + menarche + mheight + momage + mrace, data = birthweight)
+
+model_fit %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+summary(model_fit)
+```
+* The model has include variable contains baby's information and basic mother's information (babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace)
+
 
