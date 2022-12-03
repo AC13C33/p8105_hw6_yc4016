@@ -161,4 +161,19 @@ model2 %>%
 
 summary(model2)
 ```
+* I have create two models.
 
+```{r}
+cv_df = 
+  crossv_mc(birthweight, 100) %>% 
+  mutate(train = map(train, as_tibble),
+         test = map(test, as_tibble)) %>% 
+  mutate(model1 = map(.x = train, ~lm(bwt ~ blength + gaweeks, data = birthweight)),
+         model2 = map(.x = train, ~lm(bwt ~ bhead + blength + babysex + bhead*blength + blength*babysex + bhead*babysex + bhead*blength*babysex, data = birthweight)),
+         model_fit = map(.x = train, ~lm(bwt ~ babysex + bhead + bwt + delwt + gaweeks + malform + menarche + mheight + momage + mrace, data = birthweight))) %>% 
+  mutate(rmse_model1 = map2_dbl(.x = model1, .y = test, ~rmse(.x,.y)),
+         rmse_model2 = map2_dbl(.x = model2, .y = test, ~rmse(.x,.y)),
+         rmse_model_fit = map2_dbl(model_fit, .y = test, ~rmse(model = .x, .y))) 
+
+cv_df 
+```
