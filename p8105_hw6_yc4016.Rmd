@@ -215,7 +215,7 @@ summary(model2)
 ```
 * I have create two models.
 
-```{r}
+```{r, warning = FALSE}
 cv_df = 
   crossv_mc(birthweight, 100) %>% 
   mutate(train = map(train, as_tibble),
