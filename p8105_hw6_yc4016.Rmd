@@ -96,6 +96,14 @@ plot
 
 ```{r}
 birthweight = 
-  read_csv("data/birthweight.csv")
+  read_csv("data/birthweight.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(babysex = as.factor(babysex),
+          frace = as.factor(frace),
+          malform = as.factor(malform), 
+          mrace = as.factor(mrace)) %>% 
+  drop_na()
+
+birthweight
 ```
 
