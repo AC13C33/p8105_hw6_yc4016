@@ -130,7 +130,7 @@ birthweight
 * I have added the predictions and residuals. 
 
 ```{r}
-plot =
+plot1 =
   birthweight %>% 
   ggplot(aes(x = pred, y = resid)) + 
   geom_point(alpha = 0.5, cex=0.5) +
@@ -138,7 +138,7 @@ plot =
        x = "Fitted values",
        y = "Residuals") 
 
-plot
+plot1
 ```
 * I have create a plot that is residuals against fitted values
 
@@ -177,3 +177,20 @@ cv_df =
 
 cv_df 
 ```
+* I have create model comparison between model1, model1 and model_fit using cross validation.
+
+```{r}
+plot2 =
+  cv_df %>% 
+  select(starts_with("rmse")) %>% 
+  pivot_longer(everything(),
+               names_to = "model", 
+               values_to = "rmse",
+               names_prefix = "rmse_") %>% 
+  mutate(model = fct_inorder(model)) %>% 
+  ggplot(aes(x = model, y = rmse)) + 
+  geom_violin()
+
+plot2
+```
+* From plot2, model2 has lowest rmse, so model2 might be the best model.
