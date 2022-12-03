@@ -117,6 +117,14 @@ model_fit %>%
 
 summary(model_fit)
 ```
-* The model has include variable contains baby's information and basic mother's information (babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace)
+* The model is a linear regression model. It has include variable contains baby's information and basic mother's information (babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace)
 
+```{r}
+birthweight = 
+  birthweight %>% 
+  add_predictions(model_fit) %>% 
+  add_residuals(model_fit)
 
+birthweight
+```
+* I have added the predictions and residuals. 
