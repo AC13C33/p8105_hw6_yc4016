@@ -141,3 +141,24 @@ plot =
 plot
 ```
 * I have create a plot that is residuals against fitted values
+
+```{r}
+model1 = lm(bwt ~ blength + gaweeks, data = birthweight)
+
+model1 %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+summary(model1)
+
+
+
+model2 = lm(bwt ~ bhead + blength + babysex + bhead * blength + bhead * babysex + blength * babysex + bhead * blength * babysex, data = birthweight)
+
+model2 %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+summary(model2)
+```
+
