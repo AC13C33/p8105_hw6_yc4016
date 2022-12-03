@@ -88,3 +88,14 @@ plot =
 
 plot
 ```
+
+
+
+
+# Problem 3
+
+```{r}
+birthweight = 
+  read_csv("data/birthweight.csv")
+```
+
