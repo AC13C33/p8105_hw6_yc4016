@@ -15,11 +15,8 @@ set.seed(1)
 ```
 
 
-
 # Problem 1
-
 * To obtain a distribution for $\hat{r}^2$, we'll follow basically the same procedure we used for regression coefficients: draw bootstrap samples; the a model to each; extract the value I'm concerned with; and summarize. Here, we'll use `modelr::bootstrap` to draw the samples and `broom::glance` to produce `r.squared` values. 
-
 ```{r weather_df, cache = TRUE}
 weather_df = 
   rnoaa::meteo_pull_monitors(
@@ -34,6 +31,7 @@ weather_df =
   select(name, id, everything())
 ```
 
+
 ```{r}
 weather_df %>% 
   modelr::bootstrap(n = 1000) %>% 
@@ -46,6 +44,7 @@ weather_df %>%
 ```
 * In this example, the $\hat{r}^2$ value is high, and the upper bound at 1 may be a cause for the generally skewed shape of the distribution. If we wanted to construct a confidence interval for $R^2$, we could take the 2.5% and 97.5% quantiles of the estimates across bootstrap samples. However, because the shape isn't symmetric, using the mean +/- 1.96 times the standard error probably wouldn't work well.
 * We can produce a distribution for $\log(\beta_0 * \beta1)$ using a similar approach, with a bit more wrangling before we make our plot.
+
 
 ```{r}
 weather_df %>% 
@@ -72,11 +71,12 @@ weather_df %>%
 homicide_df = 
   read_csv("./data/homicide-data.csv") %>% 
   mutate(city_state = str_c(city, state, sep = ", ", collapse = NULL),
-         homicide_situation = as.numeric(disposition == "Closed by arrest")) %>% 
+         homicide_situation = as.numeric(disposition == "Closed by arrest", 1, 0)) %>% 
   filter(!(city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tulsa, AL")),
          victim_race %in% c("White", "Black")) %>% 
   mutate (victim_age = as.numeric(victim_age),
-          homicide_situation = as.numeric(homicide_situation))
+          homicide_situation = as.numeric(homicide_situation)) %>% 
+  select(-city, -state)
   
 homicide_df
 ```
@@ -86,7 +86,7 @@ homicide_df
 fit_logistic_baltimore = 
   homicide_df %>% 
   filter(city_state == "Baltimore, MD") %>%
-  glm(homicide_situation ~ victim_age + victim_sex + victim_age, data = ., family = binomial()) 
+  glm(homicide_situation ~ victim_age + victim_sex + victim_race, data = ., family = binomial()) 
 
 fit_logistic_baltimore
 ```
@@ -98,10 +98,11 @@ fit_logistic_baltimore %>%
   mutate(OR = exp(estimate),
          lower_bound = exp(estimate - 1.96 * std.error),
          upper_bound = exp(estimate + 1.96 * std.error)) %>%
-  select(term, estimate, OR, lower_bound, upper_bound) %>%
+  select(term, OR, lower_bound, upper_bound) %>%
   filter(term == "victim_sexMale") %>% 
   knitr::kable(digits = 3)
 ```
+* The adjusted OR is 0.426 with confidence interval (0.325, 0.558)
 
 
 ```{r}
@@ -142,23 +143,21 @@ plot
 ```
 
 
-
-
 # Problem 3
-
 ```{r}
 birthweight = 
   read_csv("data/birthweight.csv") %>% 
   janitor::clean_names() %>% 
   mutate(babysex = as.factor(babysex),
-          frace = as.factor(frace),
-          malform = as.factor(malform), 
-          mrace = as.factor(mrace)) %>% 
+         frace = as.factor(frace),
+         malform = as.factor(malform), 
+         mrace = as.factor(mrace)) %>% 
   drop_na()
 
 birthweight
 ```
-* No missing data
+* Since the number of variables and observations does not change after `drop_na()`. There is no missing data.
+
 
 ```{r}
 model_fit = lm(bwt ~ babysex + bhead + bwt + delwt + gaweeks + malform + menarche + mheight + momage + mrace, data = birthweight)
@@ -169,7 +168,9 @@ model_fit %>%
 
 summary(model_fit)
 ```
-* The model is a linear regression model. It has include variable contains baby's information and basic mother's information (babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace)
+* The model is a linear regression model. It has include variable contains baby's information and basic mother's demographic information (babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace).
+* The Adjusted R-squared is 0.6146. So 61.46% of the variation in birthweight can be explained by a linear relationship with x variables(babysex, bhead, bwt, delwt, gaweeks, malform, menarche, mheight, momage, mrace).
+
 
 ```{r}
 birthweight = 
@@ -181,18 +182,20 @@ birthweight
 ```
 * I have added the predictions and residuals. 
 
+
 ```{r}
 plot1 =
   birthweight %>% 
   ggplot(aes(x = pred, y = resid)) + 
   geom_point(alpha = 0.5, cex=0.5) +
   labs(title = "Residuals against fitted values",
-       x = "Fitted values",
+       x = "Predicted Values",
        y = "Residuals") 
 
 plot1
 ```
-* I have create a plot that is residuals against fitted values
+* I have create a plot that is residuals against predicted values
+
 
 ```{r}
 model1 = lm(bwt ~ blength + gaweeks, data = birthweight)
@@ -215,6 +218,7 @@ summary(model2)
 ```
 * I have create two models.
 
+
 ```{r, warning = FALSE}
 cv_df = 
   crossv_mc(birthweight, 100) %>% 
@@ -229,7 +233,8 @@ cv_df =
 
 cv_df 
 ```
-* I have create model comparison between model1, model1 and model_fit using cross validation.
+* I have create a model comparison between model1, model1 and model_fit using cross validation.
+
 
 ```{r}
 plot2 =
@@ -245,4 +250,6 @@ plot2 =
 
 plot2
 ```
-* From plot2, model2 has lowest rmse, so model2 might be the best model.
+* From plot2, model2 has the lowest rmse, so model2 might be the best model.
+
+
